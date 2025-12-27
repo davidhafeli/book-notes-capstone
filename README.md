@@ -12,8 +12,3 @@ A simple app to store books you’ve read with notes + ratings, and fetch book c
 - Open Library search to prefill title/author/ISBN
 - Covers displayed via Open Library Covers API
 
-## Setup
-
-### 1) Install dependencies
-```bash
-npm i

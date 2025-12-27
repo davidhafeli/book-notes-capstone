@@ -1,0 +1,121 @@
+<%- include("partials/header", { title: "Add Book" }) %>
+
+<section class="panel">
+  <h1>Add a book</h1>
+
+  <div class="searchbox">
+    <label for="q">Search Open Library (title/author/ISBN):</label>
+    <div class="panel-row">
+      <input id="q" placeholder="e.g. Atomic Habits, Orwell, 978..." />
+      <button type="button" id="searchBtn">Search</button>
+    </div>
+    <div id="results" class="results"></div>
+    <p class="muted">Tip: Click a result to auto-fill the form.</p>
+  </div>
+
+  <hr/>
+
+  <form method="POST" action="/books" class="form">
+    <label>Title
+      <input name="title" id="title" required />
+    </label>
+
+    <label>Author
+      <input name="author" id="author" required />
+    </label>
+
+    <label>ISBN (for cover)
+      <input name="isbn" id="isbn" />
+    </label>
+
+    <label>Rating (1-5)
+      <input name="rating" type="number" min="1" max="5" value="3" />
+    </label>
+
+    <label>Date read
+      <input name="date_read" type="date" />
+    </label>
+
+    <label>Notes
+      <textarea name="notes" rows="6" placeholder="Key ideas, highlights, takeaways..."></textarea>
+    </label>
+
+    <div class="panel-row">
+      <button type="submit">Save</button>
+      <a class="btn-secondary" href="/">Cancel</a>
+    </div>
+  </form>
+</section>
+
+<script>
+  const qEl = document.getElementById("q");
+  const resultsEl = document.getElementById("results");
+  const btn = document.getElementById("searchBtn");
+
+  const titleEl = document.getElementById("title");
+  const authorEl = document.getElementById("author");
+  const isbnEl = document.getElementById("isbn");
+
+  async function runSearch() {
+    const q = qEl.value.trim();
+    resultsEl.innerHTML = "";
+    if (!q) return;
+
+    btn.disabled = true;
+    btn.textContent = "Searching...";
+
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        resultsEl.innerHTML = `<p class="error">Search failed: ${data.error || "unknown error"}</p>`;
+        return;
+      }
+
+      const items = data.results || [];
+      if (items.length === 0) {
+        resultsEl.innerHTML = `<p class="muted">No results.</p>`;
+        return;
+      }
+
+      resultsEl.innerHTML = items.map((r, idx) => {
+        const subtitle = [r.author, r.first_publish_year].filter(Boolean).join(" · ");
+        return `
+          <button type="button" class="result" data-idx="${idx}">
+            <div class="result-title">${r.title || "(no title)"}</div>
+            <div class="result-meta">${subtitle}</div>
+            <div class="result-meta">${r.isbn ? ("ISBN: " + r.isbn) : ""}</div>
+          </button>
+        `;
+      }).join("");
+
+      resultsEl.querySelectorAll(".result").forEach((el) => {
+        el.addEventListener("click", () => {
+          const idx = Number(el.getAttribute("data-idx"));
+          const r = items[idx];
+          titleEl.value = r.title || "";
+          authorEl.value = r.author || "";
+          isbnEl.value = r.isbn || "";
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        });
+      });
+
+    } catch (e) {
+      resultsEl.innerHTML = `<p class="error">Search failed.</p>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Search";
+    }
+  }
+
+  btn.addEventListener("click", runSearch);
+  qEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      runSearch();
+    }
+  });
+</script>
+
+<%- include("partials/footer") %>

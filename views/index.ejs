@@ -1,0 +1,42 @@
+<%- include("partials/header", { title: "Book Notes" }) %>
+
+<section class="panel">
+  <div class="panel-row">
+    <h1>Your library</h1>
+
+    <form method="GET" action="/" class="inline">
+      <label for="sort">Sort:</label>
+      <select name="sort" id="sort" onchange="this.form.submit()">
+        <option value="recency" <%= sort === "recency" ? "selected" : "" %>>Recency</option>
+        <option value="rating" <%= sort === "rating" ? "selected" : "" %>>Rating</option>
+        <option value="title" <%= sort === "title" ? "selected" : "" %>>Title</option>
+      </select>
+      <noscript><button type="submit">Apply</button></noscript>
+    </form>
+  </div>
+
+  <% if (books.length === 0) { %>
+    <p class="muted">No books yet. Add your first one!</p>
+  <% } %>
+
+  <div class="grid">
+    <% books.forEach((b) => { %>
+      <a class="card" href="/books/<%= b.id %>">
+        <div class="cover">
+          <% if (b.coverUrl) { %>
+            <img src="<%= b.coverUrl %>" alt="Cover for <%= b.title %>" loading="lazy" onerror="this.style.display='none'"/>
+          <% } %>
+          <div class="cover-fallback">No cover</div>
+        </div>
+        <div class="card-body">
+          <div class="title"><%= b.title %></div>
+          <div class="meta"><%= b.author %></div>
+          <div class="meta">⭐ <%= b.rating %> · Read: <%= b.date_read %></div>
+          <div class="snippet"><%= (b.notes || "").slice(0, 110) %><%= (b.notes || "").length > 110 ? "..." : "" %></div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</section>
+
+<%- include("partials/footer") %>

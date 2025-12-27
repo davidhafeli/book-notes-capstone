@@ -1,0 +1,11 @@
+<%- include("partials/header", { title: "Error" }) %>
+
+<section class="panel">
+  <h1>⚠️ <%= message %></h1>
+  <% if (details) { %>
+    <pre class="errorbox"><%= details %></pre>
+  <% } %>
+  <p><a href="/">Go home</a></p>
+</section>
+
+<%- include("partials/footer") %>

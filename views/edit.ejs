@@ -1,0 +1,38 @@
+<%- include("partials/header", { title: "Edit Book" }) %>
+
+<section class="panel">
+  <h1>Edit book</h1>
+
+  <form method="POST" action="/books/<%= book.id %>" class="form">
+    <label>Title
+      <input name="title" value="<%= book.title %>" required />
+    </label>
+
+    <label>Author
+      <input name="author" value="<%= book.author %>" required />
+    </label>
+
+    <label>ISBN (for cover)
+      <input name="isbn" value="<%= book.isbn || "" %>" />
+    </label>
+
+    <label>Rating (1-5)
+      <input name="rating" type="number" min="1" max="5" value="<%= book.rating %>" />
+    </label>
+
+    <label>Date read
+      <input name="date_read" type="date" value="<%= book.date_read %>" />
+    </label>
+
+    <label>Notes
+      <textarea name="notes" rows="6"><%= book.notes %></textarea>
+    </label>
+
+    <div class="panel-row">
+      <button type="submit">Update</button>
+      <a class="btn-secondary" href="/books/<%= book.id %>">Cancel</a>
+    </div>
+  </form>
+</section>
+
+<%- include("partials/footer") %>

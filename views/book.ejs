@@ -1,0 +1,39 @@
+<%- include("partials/header", { title: book.title }) %>
+
+<section class="panel">
+  <div class="panel-row">
+    <div>
+      <h1><%= book.title %></h1>
+      <p class="meta"><%= book.author %></p>
+      <p class="meta">⭐ <%= book.rating %> · Read: <%= book.date_read %></p>
+      <% if (book.isbn) { %>
+        <p class="meta">ISBN: <%= book.isbn %></p>
+      <% } %>
+    </div>
+
+    <div class="panel-row">
+      <a class="btn-secondary" href="/books/<%= book.id %>/edit">Edit</a>
+      <form method="POST" action="/books/<%= book.id %>/delete" onsubmit="return confirm('Delete this book?');">
+        <button type="submit" class="danger">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="book-layout">
+    <div class="cover large">
+      <% if (book.coverUrl) { %>
+        <img src="<%= book.coverUrl %>" alt="Cover for <%= book.title %>" onerror="this.style.display='none'"/>
+      <% } %>
+      <div class="cover-fallback">No cover</div>
+    </div>
+
+    <div>
+      <h2>Notes</h2>
+      <p class="notes"><%= book.notes || "—" %></p>
+    </div>
+  </div>
+
+  <p><a href="/">← Back</a></p>
+</section>
+
+<%- include("partials/footer") %>
